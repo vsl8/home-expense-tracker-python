@@ -1,0 +1,79 @@
+# ============================================
+# Docker Compose Configuration
+# Home Expense Tracker Application
+# ============================================
+
+services:
+  # ===========================================
+  # Main Application Service
+  # ===========================================
+  expense-tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: expense-tracker:latest
+    container_name: expense-tracker-app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-change-this-secret-key-in-production}
+      - DATABASE_URL=sqlite:////app/data/expenses.db
+    volumes:
+      # Persist SQLite database
+      - expense-data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - expense-network
+
+  # ===========================================
+  # Development Service (with hot reload)
+  # ===========================================
+  expense-tracker-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: expense-tracker:dev
+    container_name: expense-tracker-dev
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - SECRET_KEY=dev-secret-key
+      - DATABASE_URL=sqlite:////app/data/expenses.db
+    volumes:
+      # Mount source code for hot reload
+      - ./app:/app/app:ro
+      - ./run.py:/app/run.py:ro
+      - expense-data-dev:/app/data
+    networks:
+      - expense-network
+    profiles:
+      - dev
+
+# ===========================================
+# Named Volumes
+# ===========================================
+volumes:
+  expense-data:
+    driver: local
+    name: expense-tracker-data
+  expense-data-dev:
+    driver: local
+    name: expense-tracker-data-dev
+
+# ===========================================
+# Networks
+# ===========================================
+networks:
+  expense-network:
+    driver: bridge
+    name: expense-tracker-network

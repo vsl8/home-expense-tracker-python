@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Expense Tracker</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --dark-color: #1a1a2e;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+        }
+        
+        .stat-card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card .icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+        
+        .stat-card.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card.success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .stat-card.warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .stat-card.info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        
+        .card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .expense-row:hover {
+            background-color: #f1f3f5;
+        }
+        
+        .category-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .btn-action {
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+        
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+        }
+        
+        .nav-pills .nav-link {
+            color: var(--primary-color);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+        
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        .type-color-preview {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-wallet2 me-2"></i>Home Expense Tracker
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showSection('dashboard')">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('expenses')">
+                            <i class="bi bi-cash-stack me-1"></i>Expenses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('categories')">
+                            <i class="bi bi-tags me-1"></i>Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('reports')">
+                            <i class="bi bi-graph-up me-1"></i>Reports
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="section">
+            <h4 class="section-title"><i class="bi bi-speedometer2 me-2"></i>Dashboard Overview</h4>
+            
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card card primary text-white p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Total Expenses</h6>
+                                <h3 class="mb-0" id="stat-total">$0.00</h3>
+                            </div>
+                            <i class="bi bi-currency-dollar icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card card success text-white p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Today</h6>
+                                <h3 class="mb-0" id="stat-today">$0.00</h3>
+                            </div>
+                            <i class="bi bi-calendar-day icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card card warning text-white p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">This Month</h6>
+                                <h3 class="mb-0" id="stat-month">$0.00</h3>
+                            </div>
+                            <i class="bi bi-calendar-month icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card card info text-white p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Transactions</h6>
+                                <h3 class="mb-0" id="stat-count">0</h3>
+                            </div>
+                            <i class="bi bi-receipt icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Row -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h5 class="card-title"><i class="bi bi-pie-chart me-2"></i>Expenses by Category</h5>
+                        <div class="chart-container">
+                            <canvas id="categoryPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h5 class="card-title"><i class="bi bi-bar-chart me-2"></i>Category Comparison</h5>
+                        <div class="chart-container">
+                            <canvas id="categoryBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Expenses -->
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0"><i class="bi bi-clock-history me-2"></i>Recent Expenses</h5>
+                    <button class="btn btn-primary btn-sm" onclick="showAddExpenseModal()">
+                        <i class="bi bi-plus-lg me-1"></i>Add Expense
+                    </button>
+                </div>
+                <div class="table-container" id="recent-expenses-container">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Expenses Section -->
+        <div id="expenses-section" class="section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0"><i class="bi bi-cash-stack me-2"></i>All Expenses</h4>
+                <button class="btn btn-primary" onclick="showAddExpenseModal()">
+                    <i class="bi bi-plus-lg me-1"></i>Add Expense
+                </button>
+            </div>
+            
+            <!-- Filters -->
+            <div class="card p-3 mb-4">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="filter-category" onchange="loadExpenses()">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="filter-start-date" onchange="loadExpenses()">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="filter-end-date" onchange="loadExpenses()">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                            <i class="bi bi-x-circle me-1"></i>Clear Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="expenses-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenses-tbody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories Section -->
+        <div id="categories-section" class="section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0"><i class="bi bi-tags me-2"></i>Expense Categories</h4>
+                <button class="btn btn-primary" onclick="showAddCategoryModal()">
+                    <i class="bi bi-plus-lg me-1"></i>Add Category
+                </button>
+            </div>
+            
+            <div class="row g-4" id="categories-container">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports-section" class="section" style="display: none;">
+            <h4 class="section-title"><i class="bi bi-graph-up me-2"></i>Expense Reports</h4>
+            
+            <!-- Period Selection -->
+            <div class="card p-4 mb-4">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Report Period</label>
+                        <select class="form-select" id="report-period" onchange="loadReport()">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly" selected>Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="half-yearly">Half Yearly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Custom Start Date</label>
+                        <input type="date" class="form-control" id="report-start-date">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Custom End Date</label>
+                        <input type="date" class="form-control" id="report-end-date">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" onclick="loadReport()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Generate
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Report Summary -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card p-4 text-center">
+                        <h6 class="text-muted">Total Expenses</h6>
+                        <h2 class="text-primary" id="report-total">$0.00</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-4 text-center">
+                        <h6 class="text-muted">Transactions</h6>
+                        <h2 class="text-success" id="report-count">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-4 text-center">
+                        <h6 class="text-muted">Average</h6>
+                        <h2 class="text-info" id="report-average">$0.00</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Report Charts -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h5 class="card-title">Category Distribution</h5>
+                        <div class="chart-container">
+                            <canvas id="reportPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h5 class="card-title">Spending Trend</h5>
+                        <div class="chart-container">
+                            <canvas id="reportLineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Export Buttons -->
+            <div class="card p-4 mb-4">
+                <h5 class="card-title mb-3"><i class="bi bi-download me-2"></i>Export Report</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <button class="btn btn-success w-100" onclick="exportReport('excel')">
+                            <i class="bi bi-file-earmark-excel me-2"></i>Export to Excel
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-danger w-100" onclick="exportReport('pdf')">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>Export to PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Report Details Table -->
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">Expense Details</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-expenses-tbody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Expense Modal -->
+    <div class="modal fade" id="expenseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="expenseModalTitle">Add Expense</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="expenseForm">
+                        <input type="hidden" id="expense-id">
+                        <div class="mb-3">
+                            <label class="form-label">Amount *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" step="0.01" min="0" class="form-control" id="expense-amount" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category *</label>
+                            <select class="form-select" id="expense-type" required>
+                                <!-- Populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date *</label>
+                            <input type="date" class="form-control" id="expense-date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="expense-description" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveExpense()">Save Expense</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalTitle">Add Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm">
+                        <input type="hidden" id="category-id">
+                        <div class="mb-3">
+                            <label class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="category-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="category-description" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Color</label>
+                            <input type="color" class="form-control form-control-color w-100" id="category-color" value="#007bff">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Icon</label>
+                            <select class="form-select" id="category-icon">
+                                <option value="bi-cash">Cash</option>
+                                <option value="bi-cart">Shopping</option>
+                                <option value="bi-house">Home</option>
+                                <option value="bi-car-front">Transport</option>
+                                <option value="bi-lightning">Utilities</option>
+                                <option value="bi-heart">Health</option>
+                                <option value="bi-book">Education</option>
+                                <option value="bi-controller">Entertainment</option>
+                                <option value="bi-cup-hot">Food & Dining</option>
+                                <option value="bi-airplane">Travel</option>
+                                <option value="bi-gift">Gifts</option>
+                                <option value="bi-three-dots">Other</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCategory()">Save Category</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this item?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // API Base URL
+        const API_BASE = '/api';
+        
+        // Chart instances
+        let categoryPieChart, categoryBarChart, reportPieChart, reportLineChart;
+        
+        // Data stores
+        let expenseTypes = [];
+        let expenses = [];
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadInitialData();
+            setDefaultDates();
+        });
+        
+        async function loadInitialData() {
+            await loadExpenseTypes();
+            await loadDashboardStats();
+            await loadExpenses();
+            loadReport();
+        }
+        
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('expense-date').value = today;
+            
+            const monthStart = new Date();
+            monthStart.setDate(1);
+            document.getElementById('filter-start-date').value = monthStart.toISOString().split('T')[0];
+            document.getElementById('filter-end-date').value = today;
+        }
+        
+        // Section Navigation
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(section + '-section').style.display = 'block';
+            
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            event.target.closest('.nav-link').classList.add('active');
+            
+            if (section === 'dashboard') loadDashboardStats();
+            if (section === 'expenses') loadExpenses();
+            if (section === 'categories') loadCategories();
+            if (section === 'reports') loadReport();
+        }
+        
+        // API Functions
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (data) options.body = JSON.stringify(data);
+            
+            const response = await fetch(API_BASE + endpoint, options);
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'API Error');
+            }
+            return response.json();
+        }
+        
+        // Load Expense Types
+        async function loadExpenseTypes() {
+            try {
+                expenseTypes = await apiCall('/expense-types');
+                populateTypeSelects();
+            } catch (error) {
+                console.error('Error loading expense types:', error);
+            }
+        }
+        
+        function populateTypeSelects() {
+            const selects = ['expense-type', 'filter-category'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+                
+                if (selectId === 'filter-category') {
+                    select.innerHTML = '<option value="">All Categories</option>';
+                } else {
+                    select.innerHTML = '<option value="">Select Category</option>';
+                }
+                
+                expenseTypes.forEach(type => {
+                    select.innerHTML += `<option value="${type.id}">${type.name}</option>`;
+                });
+                
+                select.value = currentValue;
+            });
+        }
+        
+        // Dashboard Stats
+        async function loadDashboardStats() {
+            try {
+                const stats = await apiCall('/dashboard/stats');
+                
+                document.getElementById('stat-total').textContent = `$${stats.total_all_time.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('stat-today').textContent = `$${stats.total_today.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('stat-month').textContent = `$${stats.total_this_month.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('stat-count').textContent = stats.expense_count;
+                
+                updateDashboardCharts(stats.category_breakdown);
+                loadRecentExpenses();
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+        
+        function updateDashboardCharts(categoryData) {
+            const labels = categoryData.map(c => c.name);
+            const data = categoryData.map(c => c.total);
+            const colors = categoryData.map(c => c.color);
+            
+            // Destroy existing charts
+            if (categoryPieChart) categoryPieChart.destroy();
+            if (categoryBarChart) categoryBarChart.destroy();
+            
+            // Pie Chart
+            const pieCtx = document.getElementById('categoryPieChart').getContext('2d');
+            categoryPieChart = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+            
+            // Bar Chart
+            const barCtx = document.getElementById('categoryBarChart').getContext('2d');
+            categoryBarChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Amount',
+                        data,
+                        backgroundColor: colors,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        
+        async function loadRecentExpenses() {
+            try {
+                const allExpenses = await apiCall('/expenses');
+                const recent = allExpenses.slice(0, 5);
+                
+                const container = document.getElementById('recent-expenses-container');
+                
+                if (recent.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <p>No expenses yet. Start by adding your first expense!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${recent.map(e => `
+                                <tr class="expense-row">
+                                    <td>${formatDate(e.date)}</td>
+                                    <td>
+                                        <span class="category-badge" style="background-color: ${e.type_color}20; color: ${e.type_color};">
+                                            ${e.type_name}
+                                        </span>
+                                    </td>
+                                    <td>${e.description || '-'}</td>
+                                    <td class="text-end fw-bold">$${e.amount.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error loading recent expenses:', error);
+            }
+        }
+        
+        // Expenses
+        async function loadExpenses() {
+            try {
+                let endpoint = '/expenses?';
+                
+                const typeId = document.getElementById('filter-category').value;
+                const startDate = document.getElementById('filter-start-date').value;
+                const endDate = document.getElementById('filter-end-date').value;
+                
+                if (typeId) endpoint += `type_id=${typeId}&`;
+                if (startDate) endpoint += `start_date=${startDate}&`;
+                if (endDate) endpoint += `end_date=${endDate}&`;
+                
+                expenses = await apiCall(endpoint);
+                renderExpenses();
+            } catch (error) {
+                console.error('Error loading expenses:', error);
+            }
+        }
+        
+        function renderExpenses() {
+            const tbody = document.getElementById('expenses-tbody');
+            
+            if (expenses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
+                            No expenses found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = expenses.map(e => `
+                <tr class="expense-row">
+                    <td>${formatDate(e.date)}</td>
+                    <td>
+                        <span class="category-badge" style="background-color: ${e.type_color}20; color: ${e.type_color};">
+                            ${e.type_name}
+                        </span>
+                    </td>
+                    <td>${e.description || '-'}</td>
+                    <td class="fw-bold">$${e.amount.toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary btn-action me-1" onclick="editExpense(${e.id})">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger btn-action" onclick="deleteExpense(${e.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function clearFilters() {
+            document.getElementById('filter-category').value = '';
+            document.getElementById('filter-start-date').value = '';
+            document.getElementById('filter-end-date').value = '';
+            loadExpenses();
+        }
+        
+        // Categories
+        async function loadCategories() {
+            try {
+                const types = await apiCall('/expense-types');
+                const container = document.getElementById('categories-container');
+                
+                if (types.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-12">
+                            <div class="empty-state">
+                                <i class="bi bi-tags"></i>
+                                <p>No categories yet. Create your first category!</p>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = types.map(type => `
+                    <div class="col-md-4">
+                        <div class="card p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="type-color-preview me-3" style="background-color: ${type.color};"></div>
+                                <div>
+                                    <h5 class="mb-0">
+                                        <i class="bi ${type.icon} me-2"></i>${type.name}
+                                    </h5>
+                                    <small class="text-muted">${type.expense_count} expenses</small>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-3">${type.description || 'No description'}</p>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-primary btn-sm flex-grow-1" onclick="editCategory(${type.id})">
+                                    <i class="bi bi-pencil me-1"></i>Edit
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="deleteCategory(${type.id})">
+                                    <i class="bi bi-trash me-1"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+        
+        // Reports
+        async function loadReport() {
+            try {
+                const period = document.getElementById('report-period').value;
+                const startDate = document.getElementById('report-start-date').value;
+                const endDate = document.getElementById('report-end-date').value;
+                
+                let endpoint = `/reports/summary?period=${period}`;
+                if (startDate) endpoint += `&start_date=${startDate}`;
+                if (endDate) endpoint += `&end_date=${endDate}`;
+                
+                const report = await apiCall(endpoint);
+                
+                // Update summary
+                document.getElementById('report-total').textContent = `$${report.total_amount.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('report-count').textContent = report.expense_count;
+                document.getElementById('report-average').textContent = `$${report.average_expense.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                
+                // Update charts
+                updateReportCharts(report);
+                
+                // Update table
+                renderReportExpenses(report.expenses);
+            } catch (error) {
+                console.error('Error loading report:', error);
+            }
+        }
+        
+        function updateReportCharts(report) {
+            // Destroy existing charts
+            if (reportPieChart) reportPieChart.destroy();
+            if (reportLineChart) reportLineChart.destroy();
+            
+            // Pie Chart
+            const pieCtx = document.getElementById('reportPieChart').getContext('2d');
+            reportPieChart = new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: report.category_breakdown.map(c => c.name),
+                    datasets: [{
+                        data: report.category_breakdown.map(c => c.total),
+                        backgroundColor: report.category_breakdown.map(c => c.color),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const cat = report.category_breakdown[context.dataIndex];
+                                    return `${cat.name}: $${cat.total} (${cat.percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Line Chart
+            const lineCtx = document.getElementById('reportLineChart').getContext('2d');
+            reportLineChart = new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: report.daily_trend.map(d => formatDate(d.date)),
+                    datasets: [{
+                        label: 'Daily Spending',
+                        data: report.daily_trend.map(d => d.total),
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        
+        function renderReportExpenses(expenses) {
+            const tbody = document.getElementById('report-expenses-tbody');
+            
+            if (expenses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center py-4">No expenses in this period</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = expenses.map(e => `
+                <tr>
+                    <td>${formatDate(e.date)}</td>
+                    <td>
+                        <span class="category-badge" style="background-color: ${e.type_color}20; color: ${e.type_color};">
+                            ${e.type_name}
+                        </span>
+                    </td>
+                    <td>${e.description || '-'}</td>
+                    <td class="fw-bold">$${e.amount.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function exportReport(format) {
+            const period = document.getElementById('report-period').value;
+            const startDate = document.getElementById('report-start-date').value;
+            const endDate = document.getElementById('report-end-date').value;
+            
+            let url = `${API_BASE}/reports/export/${format}?period=${period}`;
+            if (startDate) url += `&start_date=${startDate}`;
+            if (endDate) url += `&end_date=${endDate}`;
+            
+            window.location.href = url;
+        }
+        
+        // Modals
+        function showAddExpenseModal() {
+            document.getElementById('expenseModalTitle').textContent = 'Add Expense';
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expense-id').value = '';
+            document.getElementById('expense-date').value = new Date().toISOString().split('T')[0];
+            new bootstrap.Modal(document.getElementById('expenseModal')).show();
+        }
+        
+        async function editExpense(id) {
+            try {
+                const expense = await apiCall(`/expenses/${id}`);
+                document.getElementById('expenseModalTitle').textContent = 'Edit Expense';
+                document.getElementById('expense-id').value = expense.id;
+                document.getElementById('expense-amount').value = expense.amount;
+                document.getElementById('expense-type').value = expense.type_id;
+                document.getElementById('expense-date').value = expense.date;
+                document.getElementById('expense-description').value = expense.description || '';
+                new bootstrap.Modal(document.getElementById('expenseModal')).show();
+            } catch (error) {
+                alert('Error loading expense: ' + error.message);
+            }
+        }
+        
+        async function saveExpense() {
+            const id = document.getElementById('expense-id').value;
+            const data = {
+                amount: parseFloat(document.getElementById('expense-amount').value),
+                type_id: parseInt(document.getElementById('expense-type').value),
+                date: document.getElementById('expense-date').value,
+                description: document.getElementById('expense-description').value
+            };
+            
+            try {
+                if (id) {
+                    await apiCall(`/expenses/${id}`, 'PUT', data);
+                } else {
+                    await apiCall('/expenses', 'POST', data);
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('expenseModal')).hide();
+                loadExpenses();
+                loadDashboardStats();
+            } catch (error) {
+                alert('Error saving expense: ' + error.message);
+            }
+        }
+        
+        function deleteExpense(id) {
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            document.getElementById('confirmDeleteBtn').onclick = async function() {
+                try {
+                    await apiCall(`/expenses/${id}`, 'DELETE');
+                    modal.hide();
+                    loadExpenses();
+                    loadDashboardStats();
+                } catch (error) {
+                    alert('Error deleting expense: ' + error.message);
+                }
+            };
+            modal.show();
+        }
+        
+        function showAddCategoryModal() {
+            document.getElementById('categoryModalTitle').textContent = 'Add Category';
+            document.getElementById('categoryForm').reset();
+            document.getElementById('category-id').value = '';
+            document.getElementById('category-color').value = '#007bff';
+            new bootstrap.Modal(document.getElementById('categoryModal')).show();
+        }
+        
+        async function editCategory(id) {
+            try {
+                const category = await apiCall(`/expense-types/${id}`);
+                document.getElementById('categoryModalTitle').textContent = 'Edit Category';
+                document.getElementById('category-id').value = category.id;
+                document.getElementById('category-name').value = category.name;
+                document.getElementById('category-description').value = category.description || '';
+                document.getElementById('category-color').value = category.color;
+                document.getElementById('category-icon').value = category.icon;
+                new bootstrap.Modal(document.getElementById('categoryModal')).show();
+            } catch (error) {
+                alert('Error loading category: ' + error.message);
+            }
+        }
+        
+        async function saveCategory() {
+            const id = document.getElementById('category-id').value;
+            const data = {
+                name: document.getElementById('category-name').value,
+                description: document.getElementById('category-description').value,
+                color: document.getElementById('category-color').value,
+                icon: document.getElementById('category-icon').value
+            };
+            
+            try {
+                if (id) {
+                    await apiCall(`/expense-types/${id}`, 'PUT', data);
+                } else {
+                    await apiCall('/expense-types', 'POST', data);
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('categoryModal')).hide();
+                loadExpenseTypes();
+                loadCategories();
+            } catch (error) {
+                alert('Error saving category: ' + error.message);
+            }
+        }
+        
+        function deleteCategory(id) {
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            document.getElementById('confirmDeleteBtn').onclick = async function() {
+                try {
+                    await apiCall(`/expense-types/${id}`, 'DELETE');
+                    modal.hide();
+                    loadExpenseTypes();
+                    loadCategories();
+                } catch (error) {
+                    alert('Error deleting category: ' + error.message);
+                }
+            };
+            modal.show();
+        }
+        
+        // Utility Functions
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+    </script>
+</body>
+</html>

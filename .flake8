@@ -1,0 +1,32 @@
+[flake8]
+max-line-length = 120
+max-complexity = 10
+exclude = 
+    .git,
+    __pycache__,
+    build,
+    dist,
+    *.egg-info,
+    .eggs,
+    venv,
+    .venv,
+    migrations,
+    htmlcov
+
+ignore = 
+    # E501: line too long (handled by max-line-length)
+    E501,
+    # W503: line break before binary operator
+    W503,
+    # E203: whitespace before ':' (conflicts with black)
+    E203
+
+per-file-ignores =
+    # Allow unused imports in __init__.py
+    __init__.py: F401
+    # Allow assert in tests
+    tests/*.py: S101
+
+statistics = true
+count = true
+show-source = true
