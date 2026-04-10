@@ -47,54 +47,54 @@ show_help() {
 
 invoke_dev() {
     echo -e "${GREEN}Starting development server...${NC}"
-    docker-compose --profile dev up expense-tracker-dev
+    docker compose --profile dev up expense-tracker-dev
 }
 
 invoke_dev_build() {
     echo -e "${GREEN}Building development image...${NC}"
-    docker-compose --profile dev build expense-tracker-dev
+    docker compose --profile dev build expense-tracker-dev
 }
 
 invoke_test() {
     echo -e "${GREEN}Running tests...${NC}"
-    docker-compose run --rm expense-tracker-dev python -m pytest tests/ -v --cov=app
+    docker compose run --rm expense-tracker-dev python -m pytest tests/ -v --cov=app
 }
 
 invoke_lint() {
     echo -e "${GREEN}Running linting...${NC}"
-    docker-compose run --rm expense-tracker-dev flake8 app tests
-    docker-compose run --rm expense-tracker-dev pylint app
+    docker compose run --rm expense-tracker-dev flake8 app tests
+    docker compose run --rm expense-tracker-dev pylint app
 }
 
 invoke_shell() {
     echo -e "${GREEN}Opening shell in container...${NC}"
-    docker-compose run --rm expense-tracker-dev /bin/bash
+    docker compose run --rm expense-tracker-dev /bin/bash
 }
 
 invoke_build() {
     echo -e "${GREEN}Building production Docker image...${NC}"
-    docker-compose build expense-tracker
+    docker compose build expense-tracker
 }
 
 invoke_run() {
     echo -e "${GREEN}Starting production container...${NC}"
-    docker-compose up -d expense-tracker
+    docker compose up -d expense-tracker
     echo -e "${CYAN}Application running at http://localhost:5000${NC}"
 }
 
 invoke_stop() {
     echo -e "${YELLOW}Stopping containers...${NC}"
-    docker-compose down
+    docker compose down
 }
 
 invoke_logs() {
     echo -e "${GREEN}Showing container logs...${NC}"
-    docker-compose logs -f expense-tracker
+    docker compose logs -f expense-tracker
 }
 
 invoke_restart() {
     echo -e "${YELLOW}Restarting containers...${NC}"
-    docker-compose restart expense-tracker
+    docker compose restart expense-tracker
 }
 
 invoke_prod() {
@@ -105,13 +105,13 @@ invoke_prod() {
 
 invoke_clean() {
     echo -e "${YELLOW}Cleaning up Docker resources...${NC}"
-    docker-compose down -v --rmi local
+    docker compose down -v --rmi local
     docker system prune -f
 }
 
 invoke_clean_all() {
     echo -e "${RED}Cleaning ALL Docker resources...${NC}"
-    docker-compose down -v --rmi all
+    docker compose down -v --rmi all
     docker system prune -af
 }
 
