@@ -31,6 +31,11 @@ LABEL maintainer="DevOps Team"
 LABEL description="Home Expense Tracker - Flask Application"
 LABEL version="1.0.0"
 
+# Install curl for health checks
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Create non-root user for security
 RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
