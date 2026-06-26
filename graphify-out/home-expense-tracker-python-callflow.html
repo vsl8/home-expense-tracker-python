@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>home-expense-tracker-python — Complete Call Flow &amp; Architecture Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8;
+  --warn: #fbbf24; --err: #f87171; --ok: #34d399;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 2.4rem; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: 1.7rem; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+h3 { font-size: 1.25rem; margin: 32px 0 12px; color: var(--accent); }
+h4 { font-size: 1.05rem; margin: 20px 0 8px; color: var(--warn); }
+p { margin: 8px 0; color: var(--muted); }
+.subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 32px; }
+.mermaid { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; position: relative; }
+.mermaid.is-enhanced { padding: 0; overflow: hidden; min-height: 260px; }
+.mermaid-viewport { padding: 54px 24px 24px; overflow: hidden; cursor: grab; touch-action: none; min-height: 260px; }
+.mermaid-viewport.is-dragging { cursor: grabbing; }
+.mermaid-viewport svg { max-width: none !important; height: auto; transform-origin: 0 0; transition: transform 120ms ease; }
+.mermaid-toolbar { position: absolute; top: 10px; right: 10px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(15,23,42,0.92); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+.mermaid-toolbar button, .mermaid-toolbar .zoom-level { height: 28px; min-width: 32px; border: 1px solid var(--border); border-radius: 6px; background: #1e293b; color: var(--text); font: 600 0.78rem system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; }
+.mermaid-toolbar button { cursor: pointer; }
+.mermaid-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+.mermaid-toolbar .zoom-level { min-width: 52px; color: var(--muted); background: transparent; }
+.call-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+.call-table th { background: #1a2744; color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+.call-table td { padding: 8px 14px; border: 1px solid var(--border); vertical-align: top; }
+.call-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+.tag-async { background: #7c3aed33; color: #a78bfa; }
+.tag-class { background: #05966933; color: var(--ok); }
+.tag-func { background: #2563eb33; color: var(--accent); }
+.tag-cmd { background: #d9770633; color: var(--warn); }
+.tag-endpoint { background: #dc262633; color: var(--err); }
+.tag-hook { background: #db277733; color: #f472b6; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+.arrow-chain { font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent); padding: 10px; background: rgba(56,189,248,0.06); border-radius: 6px; }
+code { font-family: 'Fira Code', 'Cascadia Code', monospace; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; font-size: 0.88em; }
+ul, ol { margin: 8px 0 8px 24px; color: var(--muted); }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.nav { position: sticky; top: 0; background: var(--bg); z-index: 10; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.9rem; }
+.nav a { text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+@media (max-width: 768px) { .container { padding: 16px; } h1 { font-size: 1.8rem; } }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>home-expense-tracker-python — Complete Call Flow &amp; Architecture Documentation</h1>
+<p class="subtitle">Generated from graphify knowledge graph: 252 nodes, 298 edges, 15 communities. Commit: 9d00aaf</p>
+
+<div class="nav">
+    <a href="#overview">Architecture Overview</a>
+    <a href="#build-graph">Graph Build</a>
+    <a href="#outputs-docs">Outputs &amp; Docs</a>
+    <a href="#cli-skills">CLI &amp; Skill Installers</a>
+    <a href="#serve-api">Serving API</a>
+    <a href="#tests-fixtures">Tests &amp; Fixtures</a>
+    <a href="#routes-init">Routes Init</a>
+    <a href="#project-package">Project Package</a>
+</div>
+
+<!-- ====== Architecture Overview ====== -->
+<h2 id="overview">1. Architecture Overview</h2>
+
+<div class="mermaid">
+
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>35 nodes</small>")
+    class BUILD_GRAPH_321CBB04 module;
+    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>29 nodes</small>")
+    class OUTPUTS_DOCS_ED82387C module;
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>26 nodes</small>")
+    class CLI_SKILLS_9964CBB8 module;
+    SERVE_API_35EC8E86("Serving API<br/><small>21 nodes</small>")
+    class SERVE_API_35EC8E86 module;
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>138 nodes</small>")
+    class TESTS_FIXTURES_B84B1DCC module;
+    ROUTES_INIT_03DC0AC2("Routes Init<br/><small>2 nodes</small>")
+    class ROUTES_INIT_03DC0AC2 module;
+    PROJECT_PACKAGE_36FC15C4("Project Package<br/><small>1 nodes</small>")
+    class PROJECT_PACKAGE_36FC15C4 module;
+    TESTS_FIXTURES_B84B1DCC -->|imports x4| SERVE_API_35EC8E86
+    TESTS_FIXTURES_B84B1DCC -->|imports x3| OUTPUTS_DOCS_ED82387C
+    CLI_SKILLS_9964CBB8 -->|re exports| SERVE_API_35EC8E86
+    CLI_SKILLS_9964CBB8 -->|re exports| OUTPUTS_DOCS_ED82387C
+    CLI_SKILLS_9964CBB8 -->|imports| TESTS_FIXTURES_B84B1DCC
+    SERVE_API_35EC8E86 -->|contains| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|contains| CLI_SKILLS_9964CBB8
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Architecture Layers</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
+      <tr><td>Graph Build</td><td>35</td><td><code>6, 8</code></td></tr><tr><td>Outputs &amp; Docs</td><td>29</td><td><code>7, 11</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>26</td><td><code>9, 10</code></td></tr><tr><td>Serving API</td><td>21</td><td><code>4</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>138</td><td><code>0, 1, 2, 3, 5, 13</code></td></tr><tr><td>Routes Init</td><td>2</td><td><code>12</code></td></tr><tr><td>Project Package</td><td>1</td><td><code>14</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Core Flow</h4>
+    <div class="arrow-chain">Graph Build -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Tests &amp; Fixtures -&gt; Serving API -&gt; Routes Init -&gt; Project Package</div>
+  </div>
+</div>
+<div class="grid">
+  <div class="card">
+    <h4>Graph Report Highlights</h4>
+    <ul>
+      <li>252 nodes · 298 edges · 15 communities (12 shown, 3 thin omitted)</li>
+      <li>Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 10 edges (avg confidence: 0.7)</li>
+      <li>Token cost: 0 input · 0 output</li>
+      <li>1. `build.sh script` - 17 edges</li>
+      <li>2. `ExpenseType` - 14 edges</li>
+      <li>3. `TestExpenseAPI` - 13 edges</li>
+    </ul>
+  </div>
+</div>
+<hr>
+<!-- ====== 2. Graph Build ====== -->
+<h2 id="build-graph">2. Graph Build</h2>
+<p>Graph Build groups implementation around invoke, buildsh, buildps1, dev, mostly in build.sh, build.ps1. This section covers 35 nodes and 53 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Graph Build (35 nodes, 53 edges)
+    subgraph build_graph_build_sh_4d78c334["build.sh"]
+        home_vsl8_documents_git_github_home_expense_trac_63d9e456("build.sh script<br/><small>build.sh</small>")
+        build_sh_build_invoke_build_a0c8b23d("invoke_build()<br/><small>build.sh</small>")
+        build_sh_build_invoke_run_54377bd9("invoke_run()<br/><small>build.sh</small>")
+        build_invoke_clean_all_d4ba1537("invoke_clean_all()<br/><small>build.sh</small>")
+        build_invoke_dev_build_600a464b("invoke_dev_build()<br/><small>build.sh</small>")
+        build_invoke_local_dev_a7874edc("invoke_local_dev()<br/><small>build.sh</small>")
+        build_invoke_local_test_e55534f9("invoke_local_test()<br/><small>build.sh</small>")
+        build_sh_build_invoke_clean_750901fd("invoke_clean()<br/><small>build.sh</small>")
+        build_sh_build_invoke_dev_e94da7a5("invoke_dev()<br/><small>build.sh</small>")
+        build_sh_build_invoke_lint_596e8cf1("invoke_lint()<br/><small>build.sh</small>")
+        build_sh_build_invoke_logs_c56df0bc("invoke_logs()<br/><small>build.sh</small>")
+        build_sh_build_invoke_prod_1d0c8a08("invoke_prod()<br/><small>build.sh</small>")
+        build_sh_build_invoke_restart_4a50044e("invoke_restart()<br/><small>build.sh</small>")
+        build_sh_build_invoke_shell_550fcb5d("invoke_shell()<br/><small>build.sh</small>")
+        build_sh_build_invoke_stop_ad49e485("invoke_stop()<br/><small>build.sh</small>")
+    end
+    subgraph build_graph_build_ps1_3ef1bf87["build.ps1"]
+        build_ps1_build_invoke_build_3068eee5("Invoke-Build()<br/><small>build.ps1</small>")
+        build_ps1_build_invoke_run_47b062fd("Invoke-Run()<br/><small>build.ps1</small>")
+        build_ps1_build_invoke_prod_3fb0dcce("Invoke-Prod()<br/><small>build.ps1</small>")
+    end
+    build_ps1_build_invoke_build_3068eee5 -->|calls| build_ps1_build_invoke_prod_3fb0dcce
+    build_ps1_build_invoke_run_47b062fd -->|calls| build_ps1_build_invoke_prod_3fb0dcce
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_invoke_clean_all_d4ba1537
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_invoke_dev_build_600a464b
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_invoke_local_dev_a7874edc
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_invoke_local_test_e55534f9
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_sh_build_invoke_build_a0c8b23d
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_sh_build_invoke_clean_750901fd
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_sh_build_invoke_dev_e94da7a5
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_sh_build_invoke_lint_596e8cf1
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_sh_build_invoke_logs_c56df0bc
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_sh_build_invoke_prod_1d0c8a08
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_sh_build_invoke_restart_4a50044e
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_sh_build_invoke_run_54377bd9
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_sh_build_invoke_shell_550fcb5d
+    home_vsl8_documents_git_github_home_expense_trac_63d9e456 -->|calls| build_sh_build_invoke_stop_ad49e485
+    build_sh_build_invoke_build_a0c8b23d -->|calls| build_sh_build_invoke_prod_1d0c8a08
+    build_sh_build_invoke_run_54377bd9 -->|calls| build_sh_build_invoke_prod_1d0c8a08
+    %% Omitted for readability: 17 nodes, 0 edges
+    class home_vsl8_documents_git_github_home_expense_trac_63d9e456 function;
+    class build_sh_build_invoke_build_a0c8b23d function;
+    class build_sh_build_invoke_run_54377bd9 function;
+    class build_invoke_clean_all_d4ba1537 function;
+    class build_invoke_dev_build_600a464b function;
+    class build_invoke_local_dev_a7874edc function;
+    class build_invoke_local_test_e55534f9 function;
+    class build_sh_build_invoke_clean_750901fd function;
+    class build_sh_build_invoke_dev_e94da7a5 function;
+    class build_sh_build_invoke_lint_596e8cf1 function;
+    class build_sh_build_invoke_logs_c56df0bc function;
+    class build_sh_build_invoke_prod_1d0c8a08 function;
+    class build_sh_build_invoke_restart_4a50044e function;
+    class build_sh_build_invoke_shell_550fcb5d function;
+    class build_sh_build_invoke_stop_ad49e485 function;
+    class build_ps1_build_invoke_build_3068eee5 function;
+    class build_ps1_build_invoke_run_47b062fd function;
+    class build_ps1_build_invoke_prod_3fb0dcce function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>build.sh</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>build.sh node in build.sh.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>invoke_build()</code><br><small style="color:var(--muted)">build.sh</small><br><code>invoke_clean()</code><br><small style="color:var(--muted)">build.sh</small><br><code>invoke_clean_all()</code><br><small style="color:var(--muted)">build.sh</small><br>+13 more</td>
+  <td>build.sh script node in build.sh.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>show_help()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>show_help() node in build.sh.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>invoke_dev()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>invoke_dev() node in build.sh.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>invoke_dev_build()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>invoke_dev_build() node in build.sh.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>invoke_test()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>invoke_lint()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>invoke_lint() node in build.sh.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>invoke_shell()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>invoke_shell() node in build.sh.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>invoke_build()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><code>invoke_prod()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>invoke_build() node in build.sh.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>invoke_run()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><code>invoke_prod()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>invoke_run() node in build.sh.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>invoke_stop()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>invoke_stop() node in build.sh.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>invoke_logs()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>invoke_logs() node in build.sh.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>invoke_restart()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>invoke_restart() node in build.sh.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>invoke_prod()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small><br><code>invoke_build()</code><br><small style="color:var(--muted)">build.sh</small><br><code>invoke_run()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>invoke_prod() node in build.sh.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>invoke_clean()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>invoke_clean() node in build.sh.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>invoke_clean_all()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>invoke_clean_all() node in build.sh.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>invoke_local_dev()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>invoke_local_dev() node in build.sh.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>invoke_local_test()</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>build.sh script</code><br><small style="color:var(--muted)">build.sh</small></td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>build.ps1</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>build.ps1 node in build.ps1.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Show-Help()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Show-Help() node in build.ps1.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Invoke-Dev()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Invoke-Dev() node in build.ps1.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>Invoke-DevBuild()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Invoke-DevBuild() node in build.ps1.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Invoke-Test()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Invoke-Lint()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Invoke-Lint() node in build.ps1.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Invoke-Shell()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Invoke-Shell() node in build.ps1.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Invoke-Build()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>Invoke-Prod()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td>Invoke-Build() node in build.ps1.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Invoke-Run()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>Invoke-Prod()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td>Invoke-Run() node in build.ps1.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Invoke-Stop()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Invoke-Stop() node in build.ps1.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Invoke-Logs()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Invoke-Logs() node in build.ps1.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Invoke-Restart()</code><br><small style="color:var(--muted)">build.ps1</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Invoke-Restart() node in build.ps1.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>build.sh</code></td><td>18 nodes</td></tr>
+<tr><td><code>build.ps1</code></td><td>17 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x20, contains x17, defines x16. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 3. Outputs & Docs ====== -->
+<h2 id="outputs-docs">3. Outputs &amp; Docs</h2>
+<p>Outputs &amp; Docs groups implementation around app, reportspy, routes, expense, mostly in app/routes/reports.py, .github/workflows/ci-cd.yml, docker-compose.yml. This section covers 29 nodes and 40 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Outputs &amp; Docs (29 nodes, 40 edges)
+    subgraph outputs_docs_app_routes_reports_py_8d9d2988["app/routes/reports.py"]
+        routes_reports_get_date_range_dd8ced0f("get_date_range()<br/><small>app/routes/reports.py</small>")
+        routes_reports_export_to_excel_bfa77223("export_to_excel()<br/><small>app/routes/reports.py</small>")
+        routes_reports_export_to_pdf_9088c808("export_to_pdf()<br/><small>app/routes/reports.py</small>")
+        routes_reports_get_chart_data_a6b41d5b("get_chart_data()<br/><small>app/routes/reports.py</small>")
+        routes_reports_get_report_summary_76fad14b("get_report_summary()<br/><small>app/routes/reports.py</small>")
+        routes_reports_a03e8832("reports.py")
+    end
+    subgraph outputs_docs_github_workflows_ci_cd_yml_cbaa4ecb[".github/workflows/ci-cd.yml"]
+        workflows_ci_cd_azure_web_app_deployment_da90f577("Azure Web App Deployment<br/><small>.github/workflows/ci-cd.yml</small>")
+        workflows_ci_cd_ci_cd_pipeline_d81e3db7("CI/CD Pipeline Workflow<br/><small>.github/workflows/ci-cd.yml</small>")
+        workflows_ci_cd_progressive_deployment_8f2f932a("Progressive Deployment<br/><small>.github/workflows/ci-cd.yml</small>")
+    end
+    subgraph outputs_docs_docker_compose_yml_09c6294b["docker-compose.yml"]
+        docker_compose_development_service_ff06b09b("Development Expense Tracker Service<br/><small>docker-compose.yml</small>")
+        docker_compose_container_stack_81627561("Docker Compose Container Stack<br/><small>docker-compose.yml</small>")
+        docker_compose_production_service_caa3d2bf("Production Expense Tracker Service<br/><small>docker-compose.yml</small>")
+    end
+    subgraph outputs_docs_app_templates_index_html_9f79e6e6["app/templates/index.html"]
+        templates_index_home_expense_tracker_spa_eba189ba("Home Expense Tracker SPA<br/><small>app/templates/index.html</small>")
+        templates_index_report_export_ui_d80f8505("Report Export UI<br/><small>app/templates/index.html</small>")
+    end
+    github_copilot_instructions_home_expense_tracker_e1953476("Home Expense Tracker Copilot Instructions<br/><small>.github/copilot-instructions.md</small>")
+    readme_expense_reports_648a58cb("Expense Reports<br/><small>README.md</small>")
+    docs_github_actions_setup_azure_app_service_d23a31f0("Azure App Service Setup<br/><small>docs/GITHUB_ACTIONS_SETUP.md</small>")
+    requirements_python_dependencies_3b8eab6e("Python Dependencies<br/><small>requirements.txt</small>")
+    routes_reports_get_date_range_dd8ced0f -->|calls| routes_reports_export_to_excel_bfa77223
+    routes_reports_get_date_range_dd8ced0f -->|calls| routes_reports_export_to_pdf_9088c808
+    routes_reports_get_date_range_dd8ced0f -->|calls| routes_reports_get_chart_data_a6b41d5b
+    routes_reports_get_date_range_dd8ced0f -->|calls| routes_reports_get_report_summary_76fad14b
+    %% Omitted for readability: 11 nodes, 0 edges
+    class routes_reports_get_date_range_dd8ced0f function;
+    class routes_reports_export_to_excel_bfa77223 function;
+    class routes_reports_export_to_pdf_9088c808 function;
+    class routes_reports_get_chart_data_a6b41d5b function;
+    class routes_reports_get_report_summary_76fad14b function;
+    class routes_reports_a03e8832 module;
+    class workflows_ci_cd_azure_web_app_deployment_da90f577 klass;
+    class workflows_ci_cd_ci_cd_pipeline_d81e3db7 klass;
+    class workflows_ci_cd_progressive_deployment_8f2f932a klass;
+    class docker_compose_development_service_ff06b09b klass;
+    class docker_compose_container_stack_81627561 klass;
+    class docker_compose_production_service_caa3d2bf klass;
+    class templates_index_home_expense_tracker_spa_eba189ba klass;
+    class templates_index_report_export_ui_d80f8505 klass;
+    class github_copilot_instructions_home_expense_tracker_e1953476 concept;
+    class readme_expense_reports_648a58cb klass;
+    class docs_github_actions_setup_azure_app_service_d23a31f0 klass;
+    class requirements_python_dependencies_3b8eab6e klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>Home Expense Tracker README</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Home Expense Tracker README.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Expense Reports</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Expense Reports node in README.md.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Home Expense Tracker Copilot Instructions</code><br><small style="color:var(--muted)">.github/copilot-instructions.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Home Expense Tracker Copilot Instructions.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Multi-Stage Docker Build</code><br><small style="color:var(--muted)">.github/copilot-instructions.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Multi-Stage Docker Build.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>CI/CD Pipeline Workflow</code><br><small style="color:var(--muted)">.github/workflows/ci-cd.yml</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>CI/CD Pipeline Workflow node in .github/workflows/ci-cd.yml.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Azure Web App Deployment</code><br><small style="color:var(--muted)">.github/workflows/ci-cd.yml</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Azure Web App Deployment node in .github/workflows/ci-cd.yml.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Progressive Deployment</code><br><small style="color:var(--muted)">.github/workflows/ci-cd.yml</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Progressive Deployment node in .github/workflows/ci-cd.yml.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>GitHub Actions Environment Setup Guide</code><br><small style="color:var(--muted)">docs/GITHUB_ACTIONS_SETUP.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing GitHub Actions Environment Setup Guide.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Azure App Service Setup</code><br><small style="color:var(--muted)">docs/GITHUB_ACTIONS_SETUP.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Azure App Service Setup node in docs/GITHUB_ACTIONS_SETUP.md.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Home Expense Tracker SPA</code><br><small style="color:var(--muted)">app/templates/index.html</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Home Expense Tracker SPA node in app/templates/index.html.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Report Export UI</code><br><small style="color:var(--muted)">app/templates/index.html</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Docker Compose Container Stack</code><br><small style="color:var(--muted)">docker-compose.yml</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Docker Compose Container Stack node in docker-compose.yml.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Production Expense Tracker Service</code><br><small style="color:var(--muted)">docker-compose.yml</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Production Expense Tracker Service node in docker-compose.yml.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Development Expense Tracker Service</code><br><small style="color:var(--muted)">docker-compose.yml</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Development Expense Tracker Service node in docker-compose.yml.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>Docker Deployment Guide</code><br><small style="color:var(--muted)">docs/DOCKER.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Docker Deployment Guide.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Docker Multi-Stage Build Guidance</code><br><small style="color:var(--muted)">docs/DOCKER.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Docker Multi-Stage Build Guidance.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Python Dependencies</code><br><small style="color:var(--muted)">requirements.txt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Python Dependencies node in requirements.txt.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>reports.py</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in app/routes/reports.py.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>get_date_range()</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>export_to_excel()</code><br><small style="color:var(--muted)">app/routes/reports.py</small><br><code>export_to_pdf()</code><br><small style="color:var(--muted)">app/routes/reports.py</small><br><code>get_chart_data()</code><br><small style="color:var(--muted)">app/routes/reports.py</small><br>+1 more</td>
+  <td>get_date_range() node in app/routes/reports.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>get_report_summary()</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>get_date_range()</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>get_report_summary() node in app/routes/reports.py.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>export_to_excel()</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>get_date_range()</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>export_to_pdf()</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>get_date_range()</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>get_chart_data()</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>get_date_range()</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>get_chart_data() node in app/routes/reports.py.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Reports API routes for generating expense reports and exports.</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Reports API routes for generating expense reports and exports..</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Calculate date range based on period type.</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Calculate date range based on period type..</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Get expense report summary for a given period.</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Get expense report summary for a given period..</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Export expense report to Excel spreadsheet.</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Export expense report to Excel spreadsheet..</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Export expense report to PDF.</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Export expense report to PDF..</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Get data formatted for charts.</code><br><small style="color:var(--muted)">app/routes/reports.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Get data formatted for charts..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>app/routes/reports.py</code></td><td>12 nodes</td></tr>
+<tr><td><code>.github/workflows/ci-cd.yml</code></td><td>3 nodes</td></tr>
+<tr><td><code>docker-compose.yml</code></td><td>3 nodes</td></tr>
+<tr><td><code>.github/copilot-instructions.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>README.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>app/templates/index.html</code></td><td>2 nodes</td></tr>
+<tr><td><code>docs/DOCKER.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>docs/GITHUB_ACTIONS_SETUP.md</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: references x17, explains x6, contains x5, calls x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 4. CLI & Skill Installers ====== -->
+<h2 id="cli-skills">4. CLI &amp; Skill Installers</h2>
+<p>CLI &amp; Skill Installers groups implementation around app, graphify, copilot, skills, mostly in app/routes/main.py, app/__init__.py, run.py. This section covers 26 nodes and 24 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: CLI &amp; Skill Installers (26 nodes, 24 edges)
+    subgraph cli_skills_app_routes_main_py_eb7db32a["app/routes/main.py"]
+        routes_main_health_5de16ce7("health()<br/><small>app/routes/main.py</small>")
+        routes_main_index_af549b4a("index()<br/><small>app/routes/main.py</small>")
+        routes_main_fa03cd49("main.py")
+        routes_main_rationale_18_882e2f06("Health check endpoint.<br/><small>app/routes/main.py</small>")
+        routes_main_rationale_1_8c61f1e1("Main routes for serving the SPA.<br/><small>app/routes/main.py</small>")
+        routes_main_rationale_12_aaa2fdc4("Serve the main single-page application.<br/><small>app/routes/main.py</small>")
+    end
+    subgraph cli_skills_app_init_py_55dc1cfb["app/__init__.py"]
+        app_init_create_app_8fbc62fc("create_app()<br/><small>app/__init__.py</small>")
+        app_init_831506f4("__init__.py")
+        app_init_rationale_16_4da59816("Application factory for creating Flask...<br/><small>app/__init__.py</small>")
+        app_init_rationale_1_81da627c("Home Expense Tracker - Flask Applicatio...<br/><small>app/__init__.py</small>")
+    end
+    subgraph cli_skills_graphify_references_add_watch_md_5d85c226["graphify/references/add-watch.md"]
+        references_add_watch_watch_mode_186a2cea("Watch Mode<br/><small>graphify/references/add-watch.md</small>")
+        references_add_watch_add_watch_reference_df47735d("Add and Watch Reference<br/><small>graphify/references/add-watch.md</small>")
+    end
+    subgraph cli_skills_graphify_references_exports_md_51e3c9a4["graphify/references/exports.md"]
+        references_exports_mcp_server_export_e05a90ac("MCP Server Export<br/><small>graphify/references/exports.md</small>")
+        references_exports_export_reference_c41092c2("Export Reference<br/><small>graphify/references/exports.md</small>")
+    end
+    references_hooks_post_commit_hook_7a70796d("Post-Commit Hook<br/><small>graphify/references/hooks.md</small>")
+    references_update_incremental_reextraction_f195bd4d("Incremental Re-Extraction<br/><small>graphify/references/update.md</small>")
+    run_df6ad190("run.py")
+    tests_conftest_app_fdfd0468("app()<br/><small>tests/conftest.py</small>")
+    app_init_create_app_8fbc62fc -->|calls| tests_conftest_app_fdfd0468
+    app_init_create_app_8fbc62fc -->|imports| run_df6ad190
+    %% Omitted for readability: 8 nodes, 0 edges
+    class routes_main_health_5de16ce7 function;
+    class routes_main_index_af549b4a function;
+    class routes_main_fa03cd49 module;
+    class routes_main_rationale_18_882e2f06 concept;
+    class routes_main_rationale_1_8c61f1e1 concept;
+    class routes_main_rationale_12_aaa2fdc4 concept;
+    class app_init_create_app_8fbc62fc function;
+    class app_init_831506f4 module;
+    class app_init_rationale_16_4da59816 concept;
+    class app_init_rationale_1_81da627c concept;
+    class references_add_watch_watch_mode_186a2cea klass;
+    class references_add_watch_add_watch_reference_df47735d concept;
+    class references_exports_mcp_server_export_e05a90ac klass;
+    class references_exports_export_reference_c41092c2 concept;
+    class references_hooks_post_commit_hook_7a70796d ui;
+    class references_update_incremental_reextraction_f195bd4d klass;
+    class run_df6ad190 module;
+    class tests_conftest_app_fdfd0468 test;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>__init__.py</code><br><small style="color:var(--muted)">app/__init__.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in app/__init__.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>create_app()</code><br><small style="color:var(--muted)">app/__init__.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>app()</code><br><small style="color:var(--muted)">tests/conftest.py</small><br><code>run.py</code><br><small style="color:var(--muted)">run.py</small></td>
+  <td>create_app() node in app/__init__.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Home Expense Tracker - Flask Application A single-page application for managing</code><br><small style="color:var(--muted)">app/__init__.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Home Expense Tracker - Flask Application A single-page application for managing.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Application factory for creating Flask app instances.</code><br><small style="color:var(--muted)">app/__init__.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Application factory for creating Flask app instances..</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>main.py</code><br><small style="color:var(--muted)">app/routes/main.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in app/routes/main.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>index()</code><br><small style="color:var(--muted)">app/routes/main.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>index() node in app/routes/main.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>health()</code><br><small style="color:var(--muted)">app/routes/main.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>health() node in app/routes/main.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Main routes for serving the SPA.</code><br><small style="color:var(--muted)">app/routes/main.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Main routes for serving the SPA..</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Serve the main single-page application.</code><br><small style="color:var(--muted)">app/routes/main.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Serve the main single-page application..</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Health check endpoint.</code><br><small style="color:var(--muted)">app/routes/main.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Health check endpoint..</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>run.py</code><br><small style="color:var(--muted)">run.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>create_app()</code><br><small style="color:var(--muted)">app/__init__.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Module file in run.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Entry point for running the Flask application.</code><br><small style="color:var(--muted)">run.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Entry point for running the Flask application..</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>app()</code><br><small style="color:var(--muted)">tests/conftest.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>create_app()</code><br><small style="color:var(--muted)">app/__init__.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>app() node in tests/conftest.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Create application for the tests.</code><br><small style="color:var(--muted)">tests/conftest.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Create application for the tests..</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>graphify Skill</code><br><small style="color:var(--muted)">skills/graphify/SKILL.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing graphify Skill.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Query Path Explain Reference</code><br><small style="color:var(--muted)">graphify/references/query.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Query Path Explain Reference.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Extraction Subagent Prompt</code><br><small style="color:var(--muted)">graphify/references/extraction-spec.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Extraction Subagent Prompt.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Incremental Update Reference</code><br><small style="color:var(--muted)">graphify/references/update.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Incremental Update Reference.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>Add and Watch Reference</code><br><small style="color:var(--muted)">graphify/references/add-watch.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Add and Watch Reference.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Export Reference</code><br><small style="color:var(--muted)">graphify/references/exports.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Export Reference.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Hook Integration Reference</code><br><small style="color:var(--muted)">graphify/references/hooks.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Hook Integration Reference.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>Query Vocabulary Expansion</code><br><small style="color:var(--muted)">graphify/references/query.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Query Vocabulary Expansion.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Incremental Re-Extraction</code><br><small style="color:var(--muted)">graphify/references/update.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Incremental Re-Extraction node in graphify/references/update.md.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Watch Mode</code><br><small style="color:var(--muted)">graphify/references/add-watch.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Watch Mode node in graphify/references/add-watch.md.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>MCP Server Export</code><br><small style="color:var(--muted)">graphify/references/exports.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Post-Commit Hook</code><br><small style="color:var(--muted)">graphify/references/hooks.md</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Post-Commit Hook node in graphify/references/hooks.md.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>app/routes/main.py</code></td><td>6 nodes</td></tr>
+<tr><td><code>app/__init__.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>graphify/references/add-watch.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>graphify/references/exports.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>graphify/references/hooks.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>graphify/references/query.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>graphify/references/update.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>run.py</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: references x11, explains x7, contains x3, re exports x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 5. Serving API ====== -->
+<h2 id="serve-api">5. Serving API</h2>
+<p>Serving API groups implementation around apipy, routes, app, expense, mostly in app/routes/api.py. This section covers 21 nodes and 20 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Serving API (21 nodes, 20 edges)
+    routes_api_f343bdc2("api.py")
+    routes_api_create_expense_type_2b15a4bc("create_expense_type()<br/><small>app/routes/api.py</small>")
+    routes_api_delete_expense_9e6c5cfb("delete_expense()<br/><small>app/routes/api.py</small>")
+    routes_api_delete_expense_type_7f158098("delete_expense_type()<br/><small>app/routes/api.py</small>")
+    routes_api_get_dashboard_stats_ae7f7b59("get_dashboard_stats()<br/><small>app/routes/api.py</small>")
+    routes_api_get_expense_87d37aee("get_expense()<br/><small>app/routes/api.py</small>")
+    routes_api_get_expense_type_ae9a56e1("get_expense_type()<br/><small>app/routes/api.py</small>")
+    routes_api_get_expense_types_1ce9a722("get_expense_types()<br/><small>app/routes/api.py</small>")
+    routes_api_get_expenses_5f51a5bb("get_expenses()<br/><small>app/routes/api.py</small>")
+    routes_api_update_expense_dfe4a165("update_expense()<br/><small>app/routes/api.py</small>")
+    routes_api_update_expense_type_a0456e38("update_expense_type()<br/><small>app/routes/api.py</small>")
+    routes_api_rationale_1_7dfd837b("API routes for expense and expense type...<br/><small>app/routes/api.py</small>")
+    routes_api_rationale_32_fab72d9d("Create a new expense type.<br/><small>app/routes/api.py</small>")
+    routes_api_rationale_178_498d2bc1("Delete an expense (hard delete).<br/><small>app/routes/api.py</small>")
+    routes_api_rationale_82_08e0b1cb("Delete an expense type (soft delete).<br/><small>app/routes/api.py</small>")
+    routes_api_rationale_118_f37487e1("Get a single expense by ID.<br/><small>app/routes/api.py</small>")
+    routes_api_rationale_25_9f34e17a("Get a single expense type by ID.<br/><small>app/routes/api.py</small>")
+    routes_api_rationale_18_ad682758("Get all expense types.<br/><small>app/routes/api.py</small>")
+    routes_api_f343bdc2 -->|contains| routes_api_create_expense_type_2b15a4bc
+    routes_api_f343bdc2 -->|contains| routes_api_delete_expense_9e6c5cfb
+    routes_api_f343bdc2 -->|contains| routes_api_delete_expense_type_7f158098
+    routes_api_f343bdc2 -->|contains| routes_api_get_dashboard_stats_ae7f7b59
+    routes_api_f343bdc2 -->|contains| routes_api_get_expense_87d37aee
+    routes_api_f343bdc2 -->|contains| routes_api_get_expense_type_ae9a56e1
+    routes_api_f343bdc2 -->|contains| routes_api_get_expense_types_1ce9a722
+    routes_api_f343bdc2 -->|contains| routes_api_get_expenses_5f51a5bb
+    routes_api_f343bdc2 -->|contains| routes_api_update_expense_dfe4a165
+    routes_api_f343bdc2 -->|contains| routes_api_update_expense_type_a0456e38
+    routes_api_f343bdc2 -->|explains| routes_api_rationale_1_7dfd837b
+    routes_api_get_expense_types_1ce9a722 -->|explains| routes_api_rationale_18_ad682758
+    routes_api_get_expense_type_ae9a56e1 -->|explains| routes_api_rationale_25_9f34e17a
+    routes_api_create_expense_type_2b15a4bc -->|explains| routes_api_rationale_32_fab72d9d
+    routes_api_delete_expense_type_7f158098 -->|explains| routes_api_rationale_82_08e0b1cb
+    routes_api_get_expense_87d37aee -->|explains| routes_api_rationale_118_f37487e1
+    routes_api_delete_expense_9e6c5cfb -->|explains| routes_api_rationale_178_498d2bc1
+    %% Omitted for readability: 3 nodes, 0 edges
+    class routes_api_f343bdc2 api;
+    class routes_api_create_expense_type_2b15a4bc function;
+    class routes_api_delete_expense_9e6c5cfb function;
+    class routes_api_delete_expense_type_7f158098 function;
+    class routes_api_get_dashboard_stats_ae7f7b59 function;
+    class routes_api_get_expense_87d37aee function;
+    class routes_api_get_expense_type_ae9a56e1 function;
+    class routes_api_get_expense_types_1ce9a722 function;
+    class routes_api_get_expenses_5f51a5bb function;
+    class routes_api_update_expense_dfe4a165 function;
+    class routes_api_update_expense_type_a0456e38 function;
+    class routes_api_rationale_1_7dfd837b concept;
+    class routes_api_rationale_32_fab72d9d concept;
+    class routes_api_rationale_178_498d2bc1 concept;
+    class routes_api_rationale_82_08e0b1cb concept;
+    class routes_api_rationale_118_f37487e1 concept;
+    class routes_api_rationale_25_9f34e17a concept;
+    class routes_api_rationale_18_ad682758 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>api.py</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-endpoint">API</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>get_expense_types()</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>get_expense_types() node in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>get_expense_type()</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>get_expense_type() node in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>create_expense_type()</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>create_expense_type() node in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>update_expense_type()</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>update_expense_type() node in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>delete_expense_type()</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>delete_expense_type() node in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>get_expenses()</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>get_expenses() node in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>get_expense()</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>get_expense() node in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>update_expense()</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>update_expense() node in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>delete_expense()</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>delete_expense() node in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>get_dashboard_stats()</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>get_dashboard_stats() node in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>API routes for expense and expense type CRUD operations.</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for API routes for expense and expense type CRUD operations..</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Get all expense types.</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Get all expense types..</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Get a single expense type by ID.</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Get a single expense type by ID..</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>Create a new expense type.</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Create a new expense type..</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Update an expense type.</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Update an expense type..</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Delete an expense type (soft delete).</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Delete an expense type (soft delete)..</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Get all expenses with optional filtering.</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Get all expenses with optional filtering..</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>Get a single expense by ID.</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Get a single expense by ID..</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Delete an expense (hard delete).</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Delete an expense (hard delete)..</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Get dashboard statistics.</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Get dashboard statistics..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>app/routes/api.py</code></td><td>21 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x10, explains x10. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 6. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">6. Tests &amp; Fixtures</h2>
+<p>Tests &amp; Fixtures groups implementation around test, tests, apipy, expense, mostly in tests/test_api.py, tests/test_reports.py, tests/test_models.py. This section covers 138 nodes and 148 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Tests &amp; Fixtures (138 nodes, 148 edges)
+    subgraph tests_fixtures_tests_test_api_py_4bcf58d8["tests/test_api.py"]
+        tests_test_api_testexpenseapi_e0c4b5d6("TestExpenseAPI<br/><small>tests/test_api.py</small>")
+        tests_test_api_testexpensetypeapi_0ab802e3("TestExpenseTypeAPI<br/><small>tests/test_api.py</small>")
+        tests_test_api_testexpensetypeapi_test_create_ex_80793fb9("test_create_expense_type()<br/><small>tests/test_api.py</small>")
+        tests_test_api_testexpensetypeapi_test_create_ex_8f7e630c("test_create_expense_type_duplicate_name()<br/><small>tests/test_api.py</small>")
+        tests_test_api_testexpensetypeapi_test_create_ex_2d3e99a2("test_create_expense_type_no_name()<br/><small>tests/test_api.py</small>")
+        tests_test_api_testexpensetypeapi_test_delete_ex_cb738f9c("test_delete_expense_type()<br/><small>tests/test_api.py</small>")
+    end
+    subgraph tests_fixtures_tests_test_models_py_1f24c788["tests/test_models.py"]
+        tests_test_models_testexpensemodel_61eacb19("TestExpenseModel<br/><small>tests/test_models.py</small>")
+        tests_test_models_testexpensetypemodel_test_crea_9b91d1a3("test_create_expense_type()<br/><small>tests/test_models.py</small>")
+        tests_test_models_testexpensetypemodel_test_expe_220e1a45("test_expense_type_to_dict()<br/><small>tests/test_models.py</small>")
+        tests_test_models_testexpensetypemodel_test_expe_c7d879a4("test_expense_type_unique_name()<br/><small>tests/test_models.py</small>")
+        tests_test_models_testexpensemodel_test_create_e_82eeb0b4("test_create_expense()<br/><small>tests/test_models.py</small>")
+    end
+    subgraph tests_fixtures_app_models_py_6b1a82f8["app/models.py"]
+        app_models_expensetype_96212cbf("ExpenseType<br/><small>app/models.py</small>")
+        app_models_expense_684e64d8("Expense<br/><small>app/models.py</small>")
+        app_models_expensetype_to_dict_50662bd3("to_dict()<br/><small>app/models.py</small>")
+        app_models_expense_to_dict_0b2f9663("to_dict()<br/><small>app/models.py</small>")
+    end
+    routes_api_create_expense_51940fd9("create_expense()<br/><small>app/routes/api.py</small>")
+    tests_conftest_init_database_bd82a544("init_database()<br/><small>tests/conftest.py</small>")
+    tests_test_reports_testreportssummary_8e69f4ff("TestReportsSummary<br/><small>tests/test_reports.py</small>")
+    app_models_expensetype_96212cbf -->|method| app_models_expensetype_to_dict_50662bd3
+    app_models_expensetype_96212cbf -->|calls| tests_conftest_init_database_bd82a544
+    app_models_expensetype_96212cbf -->|calls| tests_test_models_testexpensetypemodel_test_crea_9b91d1a3
+    app_models_expensetype_96212cbf -->|calls| tests_test_models_testexpensetypemodel_test_expe_220e1a45
+    app_models_expensetype_96212cbf -->|calls| tests_test_models_testexpensetypemodel_test_expe_c7d879a4
+    app_models_expense_684e64d8 -->|method| app_models_expense_to_dict_0b2f9663
+    app_models_expense_684e64d8 -->|calls| routes_api_create_expense_51940fd9
+    app_models_expense_684e64d8 -->|calls| tests_conftest_init_database_bd82a544
+    app_models_expense_684e64d8 -->|calls| tests_test_models_testexpensemodel_test_create_e_82eeb0b4
+    tests_test_api_testexpensetypeapi_0ab802e3 -->|method| tests_test_api_testexpensetypeapi_test_create_ex_80793fb9
+    tests_test_api_testexpensetypeapi_0ab802e3 -->|method| tests_test_api_testexpensetypeapi_test_create_ex_8f7e630c
+    tests_test_api_testexpensetypeapi_0ab802e3 -->|method| tests_test_api_testexpensetypeapi_test_create_ex_2d3e99a2
+    tests_test_api_testexpensetypeapi_0ab802e3 -->|method| tests_test_api_testexpensetypeapi_test_delete_ex_cb738f9c
+    tests_test_models_testexpensemodel_61eacb19 -->|method| tests_test_models_testexpensemodel_test_create_e_82eeb0b4
+    %% Omitted for readability: 120 nodes, 0 edges
+    class tests_test_api_testexpenseapi_e0c4b5d6 test;
+    class tests_test_api_testexpensetypeapi_0ab802e3 test;
+    class tests_test_api_testexpensetypeapi_test_create_ex_80793fb9 test;
+    class tests_test_api_testexpensetypeapi_test_create_ex_8f7e630c test;
+    class tests_test_api_testexpensetypeapi_test_create_ex_2d3e99a2 test;
+    class tests_test_api_testexpensetypeapi_test_delete_ex_cb738f9c test;
+    class tests_test_models_testexpensemodel_61eacb19 test;
+    class tests_test_models_testexpensetypemodel_test_crea_9b91d1a3 test;
+    class tests_test_models_testexpensetypemodel_test_expe_220e1a45 test;
+    class tests_test_models_testexpensetypemodel_test_expe_c7d879a4 test;
+    class tests_test_models_testexpensemodel_test_create_e_82eeb0b4 test;
+    class app_models_expensetype_96212cbf klass;
+    class app_models_expense_684e64d8 klass;
+    class app_models_expensetype_to_dict_50662bd3 function;
+    class app_models_expense_to_dict_0b2f9663 function;
+    class routes_api_create_expense_51940fd9 function;
+    class tests_conftest_init_database_bd82a544 test;
+    class tests_test_reports_testreportssummary_8e69f4ff test;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>models.py</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>conftest.py</code><br><small style="color:var(--muted)">tests/conftest.py</small><br><code>test_models.py</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td>Module file in app/models.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>ExpenseType</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>conftest.py</code><br><small style="color:var(--muted)">tests/conftest.py</small><br><code>init_database()</code><br><small style="color:var(--muted)">tests/conftest.py</small><br><code>test_create_expense_type()</code><br><small style="color:var(--muted)">tests/test_models.py</small><br>+6 more</td>
+  <td>ExpenseType node in app/models.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>.to_dict()</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExpenseType</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.to_dict() node in app/models.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Expense</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>conftest.py</code><br><small style="color:var(--muted)">tests/conftest.py</small><br><code>create_expense()</code><br><small style="color:var(--muted)">app/routes/api.py</small><br><code>init_database()</code><br><small style="color:var(--muted)">tests/conftest.py</small><br>+5 more</td>
+  <td>Expense node in app/models.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>.to_dict()</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Expense</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.to_dict() node in app/models.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Database models for the Expense Tracker application.</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Database models for the Expense Tracker application..</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Model for expense categories/types.</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Model for expense categories/types..</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Convert model to dictionary.</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Convert model to dictionary..</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Model for individual expense records.</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Model for individual expense records..</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Convert model to dictionary.</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Convert model to dictionary..</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>create_expense()</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Expense</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>create_expense() node in app/routes/api.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Create a new expense.</code><br><small style="color:var(--muted)">app/routes/api.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Create a new expense..</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>conftest.py</code><br><small style="color:var(--muted)">tests/conftest.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Expense</code><br><small style="color:var(--muted)">app/models.py</small><br><code>ExpenseType</code><br><small style="color:var(--muted)">app/models.py</small><br><code>models.py</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Module file in tests/conftest.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>client()</code><br><small style="color:var(--muted)">tests/conftest.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>client() node in tests/conftest.py.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>init_database()</code><br><small style="color:var(--muted)">tests/conftest.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Expense</code><br><small style="color:var(--muted)">app/models.py</small><br><code>ExpenseType</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>init_database() node in tests/conftest.py.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Pytest configuration and fixtures.</code><br><small style="color:var(--muted)">tests/conftest.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Pytest configuration and fixtures..</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Create a test client for the app.</code><br><small style="color:var(--muted)">tests/conftest.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Create a test client for the app..</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Initialize database with test data.</code><br><small style="color:var(--muted)">tests/conftest.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Initialize database with test data..</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>test_models.py</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Expense</code><br><small style="color:var(--muted)">app/models.py</small><br><code>ExpenseType</code><br><small style="color:var(--muted)">app/models.py</small><br><code>models.py</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Module file in tests/test_models.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>TestExpenseTypeModel</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Expense</code><br><small style="color:var(--muted)">app/models.py</small><br><code>ExpenseType</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><code>test_create_expense_type()</code><br><small style="color:var(--muted)">tests/test_models.py</small><br><code>test_expense_type_to_dict()</code><br><small style="color:var(--muted)">tests/test_models.py</small><br><code>test_expense_type_unique_name()</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>.test_create_expense_type()</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>ExpenseType</code><br><small style="color:var(--muted)">app/models.py</small><br><code>TestExpenseTypeModel</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>.test_expense_type_to_dict()</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>ExpenseType</code><br><small style="color:var(--muted)">app/models.py</small><br><code>TestExpenseTypeModel</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>.test_expense_type_unique_name()</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>ExpenseType</code><br><small style="color:var(--muted)">app/models.py</small><br><code>TestExpenseTypeModel</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>TestExpenseModel</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Expense</code><br><small style="color:var(--muted)">app/models.py</small><br><code>ExpenseType</code><br><small style="color:var(--muted)">app/models.py</small></td>
+  <td><code>test_cascade_delete()</code><br><small style="color:var(--muted)">tests/test_models.py</small><br><code>test_create_expense()</code><br><small style="color:var(--muted)">tests/test_models.py</small><br><code>test_expense_relationship()</code><br><small style="color:var(--muted)">tests/test_models.py</small><br>+1 more</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>.test_create_expense()</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>Expense</code><br><small style="color:var(--muted)">app/models.py</small><br><code>TestExpenseModel</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>.test_expense_to_dict()</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>TestExpenseModel</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>.test_expense_relationship()</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>TestExpenseModel</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>.test_cascade_delete()</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>TestExpenseModel</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Unit tests for database models.</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Unit tests for database models..</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Tests for ExpenseType model.</code><br><small style="color:var(--muted)">tests/test_models.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Tests for ExpenseType model..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>tests/test_api.py</code></td><td>56 nodes</td></tr>
+<tr><td><code>tests/test_reports.py</code></td><td>42 nodes</td></tr>
+<tr><td><code>tests/test_models.py</code></td><td>20 nodes</td></tr>
+<tr><td><code>app/models.py</code></td><td>10 nodes</td></tr>
+<tr><td><code>tests/conftest.py</code></td><td>6 nodes</td></tr>
+<tr><td><code>app/routes/api.py</code></td><td>2 nodes</td></tr>
+<tr><td><code>tests/__init__.py</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x69, method x48, contains x14, calls x7. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 7. Routes Init ====== -->
+<h2 id="routes-init">7. Routes Init</h2>
+<p>Routes Init groups implementation around routes, app, package, initialization, mostly in app/routes/__init__.py. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Routes Init (2 nodes, 1 edges)
+    routes_init_3ce369c3("__init__.py")
+    routes_init_rationale_1_884c1b21("Routes package initialization.<br/><small>app/routes/__init__.py</small>")
+    routes_init_3ce369c3 -->|explains| routes_init_rationale_1_884c1b21
+    class routes_init_3ce369c3 module;
+    class routes_init_rationale_1_884c1b21 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>__init__.py</code><br><small style="color:var(--muted)">app/routes/__init__.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in app/routes/__init__.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Routes package initialization.</code><br><small style="color:var(--muted)">app/routes/__init__.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Routes package initialization..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>app/routes/__init__.py</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 8. Project Package ====== -->
+<h2 id="project-package">8. Project Package</h2>
+<p>Project Package groups implementation around home, expense, tracker, pyprojecttoml, mostly in pyproject.toml. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Project Package (1 nodes, 0 edges)
+    pkg_home_expense_tracker_99b5c796("home-expense-tracker<br/><small>pyproject.toml</small>")
+    class pkg_home_expense_tracker_99b5c796 module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>home-expense-tracker</code><br><small style="color:var(--muted)">pyproject.toml</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>home-expense-tracker node in pyproject.toml.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>pyproject.toml</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: No high-confidence call edges detected. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<h2 id="hyperedges">Group Relationships (Hyperedges)</h2>
+<div class="grid">
+
+  <div class="card">
+    <h4>Graphify Reference Documents</h4>
+    <p><code>form</code> — 6 participants</p>
+    <ul>
+      <li><code>references_query_query_reference</code></li>
+      <li><code>references_extraction_spec_extraction_prompt</code></li>
+      <li><code>references_update_incremental_update_reference</code></li>
+      <li><code>references_add_watch_add_watch_reference</code></li>
+      <li><code>references_exports_export_reference</code></li>
+      <li>... and 1 more</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Progressive Delivery Stack</h4>
+    <p><code>form</code> — 5 participants</p>
+    <ul>
+      <li><code>workflows_ci_cd_ci_cd_pipeline</code></li>
+      <li><code>workflows_ci_cd_azure_web_app_deployment</code></li>
+      <li><code>workflows_ci_cd_progressive_deployment</code></li>
+      <li><code>docs_github_actions_setup_environment_setup_guide</code></li>
+      <li><code>docs_github_actions_setup_azure_app_service</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Expense Reporting Surface</h4>
+    <p><code>participate_in</code> — 5 participants</p>
+    <ul>
+      <li><code>readme_home_expense_tracker</code></li>
+      <li><code>readme_expense_reports</code></li>
+      <li><code>templates_index_home_expense_tracker_spa</code></li>
+      <li><code>templates_index_report_export_ui</code></li>
+      <li><code>requirements_python_dependencies</code></li>
+    </ul>
+  </div>
+</div>
+<hr>
+<h2 id="stats">Project Statistics</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4>Graph</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>Nodes</td><td>252</td></tr>
+      <tr><td>Edges</td><td>298</td></tr>
+      <tr><td>Hyperedges</td><td>3</td></tr>
+      <tr><td>Communities</td><td>15</td></tr>
+      <tr><td>Documented Sections</td><td>7</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Edge Confidence</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>EXTRACTED</td><td>288</td></tr>
+      <tr><td>INFERRED</td><td>10</td></tr>
+      <tr><td>AMBIGUOUS</td><td>0</td></tr>
+    </table>
+  </div>
+</div>
+
+<div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
+  <p>home-expense-tracker-python — Architecture Documentation</p>
+  <p>Generated: 2026-06-26 17:17 UTC · graphify callflow-html</p>
+</div>
+
+</div><!-- .container -->
+
+<script>
+(function () {
+  const mermaidConfig = {
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: true },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#38bdf8',
+      secondaryColor: '#0f172a',
+      tertiaryColor: '#334155',
+      lineColor: '#64748b',
+      textColor: '#e2e8f0',
+    }
+  };
+
+  mermaid.initialize(mermaidConfig);
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function enhanceMermaidDiagrams() {
+    document.querySelectorAll('.mermaid').forEach((container) => {
+      if (container.dataset.zoomReady === 'true') return;
+      const svg = container.querySelector('svg');
+      if (!svg) return;
+
+      container.dataset.zoomReady = 'true';
+      container.classList.add('is-enhanced');
+
+      const viewport = document.createElement('div');
+      viewport.className = 'mermaid-viewport';
+      svg.parentNode.insertBefore(viewport, svg);
+      viewport.appendChild(svg);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      toolbar.innerHTML = [
+        '<button type="button" data-action="zoom-out" title="Zoom out">-</button>',
+        '<span class="zoom-level" data-role="level">100%</span>',
+        '<button type="button" data-action="zoom-in" title="Zoom in">+</button>',
+        '<button type="button" data-action="fit" title="Fit width">Fit</button>',
+        '<button type="button" data-action="reset" title="Reset view">Reset</button>'
+      ].join('');
+      container.insertBefore(toolbar, viewport);
+
+      const state = { scale: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, originX: 0, originY: 0 };
+      const level = toolbar.querySelector('[data-role="level"]');
+
+      function applyTransform() {
+        svg.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+        level.textContent = `${Math.round(state.scale * 100)}%`;
+      }
+
+      function zoomBy(delta) {
+        state.scale = clamp(state.scale + delta, 0.25, 3);
+        applyTransform();
+      }
+
+      function reset() {
+        state.scale = 1;
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      function fitWidth() {
+        const rawWidth = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width
+          ? svg.viewBox.baseVal.width
+          : svg.getBoundingClientRect().width / state.scale;
+        if (!rawWidth) {
+          reset();
+          return;
+        }
+        state.scale = clamp((viewport.clientWidth - 48) / rawWidth, 0.25, 1.4);
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      toolbar.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const action = button.dataset.action;
+        if (action === 'zoom-in') zoomBy(0.15);
+        if (action === 'zoom-out') zoomBy(-0.15);
+        if (action === 'fit') fitWidth();
+        if (action === 'reset') reset();
+      });
+
+      viewport.addEventListener('wheel', (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        event.preventDefault();
+        zoomBy(event.deltaY < 0 ? 0.1 : -0.1);
+      }, { passive: false });
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        state.dragging = true;
+        state.startX = event.clientX;
+        state.startY = event.clientY;
+        state.originX = state.x;
+        state.originY = state.y;
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (event) => {
+        if (!state.dragging) return;
+        state.x = state.originX + event.clientX - state.startX;
+        state.y = state.originY + event.clientY - state.startY;
+        applyTransform();
+      });
+
+      function endDrag(event) {
+        if (!state.dragging) return;
+        state.dragging = false;
+        viewport.classList.remove('is-dragging');
+        if (viewport.hasPointerCapture(event.pointerId)) {
+          viewport.releasePointerCapture(event.pointerId);
+        }
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      applyTransform();
+    });
+  }
+
+  function renderMermaid() {
+    const result = mermaid.run
+      ? mermaid.run({ querySelector: '.mermaid' })
+      : Promise.resolve();
+    Promise.resolve(result)
+      .then(enhanceMermaidDiagrams)
+      .catch((error) => {
+        console.error('Mermaid render failed:', error);
+        enhanceMermaidDiagrams();
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderMermaid);
+  } else {
+    renderMermaid();
+  }
+})();
+</script>
+
+</body>
+</html>
