@@ -1,0 +1,162 @@
+{
+  "app/__init__.py": {
+    "mtime": 1782192551.3944988,
+    "ast_hash": "56178a7777f6c281970d475d18f10e18",
+    "semantic_hash": "56178a7777f6c281970d475d18f10e18"
+  },
+  "app/models.py": {
+    "mtime": 1782192551.3947792,
+    "ast_hash": "50b092db364fce982a4bbf784d84166c",
+    "semantic_hash": "50b092db364fce982a4bbf784d84166c"
+  },
+  "app/routes/__init__.py": {
+    "mtime": 1782192551.3947792,
+    "ast_hash": "59955b6354b773ab080540c83e29eab8",
+    "semantic_hash": "59955b6354b773ab080540c83e29eab8"
+  },
+  "app/routes/api.py": {
+    "mtime": 1782192551.3948839,
+    "ast_hash": "d71da456c21bfcb096375d16b08d6c55",
+    "semantic_hash": "d71da456c21bfcb096375d16b08d6c55"
+  },
+  "app/routes/main.py": {
+    "mtime": 1782192551.3948839,
+    "ast_hash": "f079173fcc24f66acbb8ef6fc43ecb4c",
+    "semantic_hash": "f079173fcc24f66acbb8ef6fc43ecb4c"
+  },
+  "app/routes/reports.py": {
+    "mtime": 1782192551.3948839,
+    "ast_hash": "12484a4934e5d6cc651dfcd9aac68ce3",
+    "semantic_hash": "12484a4934e5d6cc651dfcd9aac68ce3"
+  },
+  "build.ps1": {
+    "mtime": 1782192551.3948839,
+    "ast_hash": "1d3d2e485890fbc84acfc5480192bd1a",
+    "semantic_hash": "1d3d2e485890fbc84acfc5480192bd1a"
+  },
+  "build.sh": {
+    "mtime": 1782192551.3948839,
+    "ast_hash": "b0e2e5736e3ba581c3ed0f33f5e88ad0",
+    "semantic_hash": "b0e2e5736e3ba581c3ed0f33f5e88ad0"
+  },
+  "pyproject.toml": {
+    "mtime": 1782192551.3955007,
+    "ast_hash": "9232bf22be3f61501015cef9cabd7b9f",
+    "semantic_hash": "9232bf22be3f61501015cef9cabd7b9f"
+  },
+  "run.py": {
+    "mtime": 1782192551.3955007,
+    "ast_hash": "f2e5194fb30809373b859a8acfda8a0d",
+    "semantic_hash": "f2e5194fb30809373b859a8acfda8a0d"
+  },
+  "tests/__init__.py": {
+    "mtime": 1782192551.3955007,
+    "ast_hash": "086569bd5ec1a666ee2825062f8404c6",
+    "semantic_hash": "086569bd5ec1a666ee2825062f8404c6"
+  },
+  "tests/conftest.py": {
+    "mtime": 1782192551.3958619,
+    "ast_hash": "5b79f3e35f10123011a7f0f7a64ceb28",
+    "semantic_hash": "5b79f3e35f10123011a7f0f7a64ceb28"
+  },
+  "tests/test_api.py": {
+    "mtime": 1782192551.3958619,
+    "ast_hash": "b375bcda7a655695e6f10a67435d24ee",
+    "semantic_hash": "b375bcda7a655695e6f10a67435d24ee"
+  },
+  "tests/test_models.py": {
+    "mtime": 1782192551.3958619,
+    "ast_hash": "6b6ffd6a171cbf052d6997405e527707",
+    "semantic_hash": "6b6ffd6a171cbf052d6997405e527707"
+  },
+  "tests/test_reports.py": {
+    "mtime": 1782192551.3958619,
+    "ast_hash": "742bea6b2d05bd26233aaa9c63172044",
+    "semantic_hash": "742bea6b2d05bd26233aaa9c63172044"
+  },
+  ".copilot/skills/graphify/SKILL.md": {
+    "mtime": 1782493190.255581,
+    "ast_hash": "2e44981722f69e3cd7838f03e9b43ef5",
+    "semantic_hash": "2e44981722f69e3cd7838f03e9b43ef5"
+  },
+  ".copilot/skills/graphify/references/add-watch.md": {
+    "mtime": 1782474111.9451137,
+    "ast_hash": "d59d027fe449f06aa03905a01184e779",
+    "semantic_hash": "d59d027fe449f06aa03905a01184e779"
+  },
+  ".copilot/skills/graphify/references/exports.md": {
+    "mtime": 1782474111.9452207,
+    "ast_hash": "9da2a2152e60a22f07f05fed5158f287",
+    "semantic_hash": "9da2a2152e60a22f07f05fed5158f287"
+  },
+  ".copilot/skills/graphify/references/extraction-spec.md": {
+    "mtime": 1782474111.9453425,
+    "ast_hash": "2e620982acb506f557538cdcfb1ef6da",
+    "semantic_hash": "2e620982acb506f557538cdcfb1ef6da"
+  },
+  ".copilot/skills/graphify/references/github-and-merge.md": {
+    "mtime": 1782474111.9454486,
+    "ast_hash": "cde13df085e4c492aeb7ba298a996d0d",
+    "semantic_hash": "cde13df085e4c492aeb7ba298a996d0d"
+  },
+  ".copilot/skills/graphify/references/hooks.md": {
+    "mtime": 1782474111.9455492,
+    "ast_hash": "3f545db6ce646650bb9de588f5512a27",
+    "semantic_hash": "3f545db6ce646650bb9de588f5512a27"
+  },
+  ".copilot/skills/graphify/references/query.md": {
+    "mtime": 1782474111.9456773,
+    "ast_hash": "9e5aadc2c57ab561bc56600fcfa70735",
+    "semantic_hash": "9e5aadc2c57ab561bc56600fcfa70735"
+  },
+  ".copilot/skills/graphify/references/transcribe.md": {
+    "mtime": 1782474111.9457903,
+    "ast_hash": "67b6a5fa6c0974e18f60db9f8932fbd8",
+    "semantic_hash": "67b6a5fa6c0974e18f60db9f8932fbd8"
+  },
+  ".copilot/skills/graphify/references/update.md": {
+    "mtime": 1782474111.945911,
+    "ast_hash": "c698309979460d0f02ba616417844399",
+    "semantic_hash": "c698309979460d0f02ba616417844399"
+  },
+  ".github/copilot-instructions.md": {
+    "mtime": 1782192674.2505543,
+    "ast_hash": "0f28a7497983cc32cd945102d0848655",
+    "semantic_hash": "0f28a7497983cc32cd945102d0848655"
+  },
+  ".github/workflows/ci-cd.yml": {
+    "mtime": 1782192551.3943388,
+    "ast_hash": "494f5fd063733b3eb6d07e3ea0ddf6b2",
+    "semantic_hash": "494f5fd063733b3eb6d07e3ea0ddf6b2"
+  },
+  "README.md": {
+    "mtime": 1782192551.3944988,
+    "ast_hash": "47e02f8f140a346187fa516efeb5d482",
+    "semantic_hash": "47e02f8f140a346187fa516efeb5d482"
+  },
+  "app/templates/index.html": {
+    "mtime": 1782192551.3948839,
+    "ast_hash": "0554c1356dd074820f23aa9d973e2703",
+    "semantic_hash": "0554c1356dd074820f23aa9d973e2703"
+  },
+  "docker-compose.yml": {
+    "mtime": 1782192551.3948839,
+    "ast_hash": "532fb7027777b94409f150ef23a559e2",
+    "semantic_hash": "532fb7027777b94409f150ef23a559e2"
+  },
+  "docs/DOCKER.md": {
+    "mtime": 1782192551.3948839,
+    "ast_hash": "15f04c845f4b204961b8e21b1cd81bed",
+    "semantic_hash": "15f04c845f4b204961b8e21b1cd81bed"
+  },
+  "docs/GITHUB_ACTIONS_SETUP.md": {
+    "mtime": 1782192551.3955007,
+    "ast_hash": "a8ebab0f598f0ddd3ff34e839195e254",
+    "semantic_hash": "a8ebab0f598f0ddd3ff34e839195e254"
+  },
+  "requirements.txt": {
+    "mtime": 1782192551.3955007,
+    "ast_hash": "4da789ba94d68e28c669b9a57f4057a2",
+    "semantic_hash": "4da789ba94d68e28c669b9a57f4057a2"
+  }
+}
